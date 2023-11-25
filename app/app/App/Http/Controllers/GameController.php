@@ -40,6 +40,7 @@ class GameController extends Controller
      * @throws Exception
      */
     protected function someoneHasWon( GameBoard $game ): bool {
+
         // ##### TASK 7 - Make this check more efficient ###############################################################
         // =============================================================================================================
         // This function checks if the game has already won. It does this by checking for every possible winning
@@ -49,66 +50,52 @@ class GameController extends Controller
         // shorten this function without compromising its functionality. Note that by "shorten", we don't mean to just
         // remove spaces and line breaks ;)
         // =============================================================================================================
-
-        if (    // Check the first row
-            $game->getRow(0)->getSpace( 0 ) === $game->getRow(0)->getSpace( 1 ) &&
-            $game->getRow(0)->getSpace( 0 ) === $game->getRow(0)->getSpace( 2 ) &&
-            $game->getRow(0)->getSpace( 0 ) !== GameMark::None
-        ) return true;
-
-        if (    // Check the second row
-            $game->getRow(1)->getSpace( 0 ) === $game->getRow(1)->getSpace( 1 ) &&
-            $game->getRow(1)->getSpace( 0 ) === $game->getRow(1)->getSpace( 2 ) &&
-            $game->getRow(1)->getSpace( 0 ) !== GameMark::None
-        ) return true;
-
-        if (    // Check the third row
-            $game->getRow(2)->getSpace( 0 ) === $game->getRow(2)->getSpace( 1 ) &&
-            $game->getRow(2)->getSpace( 0 ) === $game->getRow(2)->getSpace( 2 ) &&
-            $game->getRow(2)->getSpace( 0 ) !== GameMark::None
-        ) return true;
-
-        if (    // Check the first column
-            $game->getColumn(0)->getSpace( 0 ) === $game->getColumn(0)->getSpace( 1 ) &&
-            $game->getColumn(0)->getSpace( 0 ) === $game->getColumn(0)->getSpace( 2 ) &&
-            $game->getColumn(0)->getSpace( 0 ) !== GameMark::None
-        ) return true;
-
-        if (    // Check the second column
-            $game->getColumn(1)->getSpace( 0 ) === $game->getColumn(1)->getSpace( 1 ) &&
-            $game->getColumn(1)->getSpace( 0 ) === $game->getColumn(1)->getSpace( 2 ) &&
-            $game->getColumn(1)->getSpace( 0 ) !== GameMark::None
-        ) return true;
-
-        if (    // Check the third column
-            $game->getColumn(2)->getSpace( 0 ) === $game->getColumn(2)->getSpace( 1 ) &&
-            $game->getColumn(2)->getSpace( 0 ) === $game->getColumn(2)->getSpace( 2 ) &&
-            $game->getColumn(2)->getSpace( 0 ) !== GameMark::None
-        ) return true;
-
-        if (    // Check the main diagonal
-            $game->getMainDiagonal(0)->getSpace( 0 ) === $game->getMainDiagonal(0)->getSpace( 1 ) &&
-            $game->getMainDiagonal(0)->getSpace( 0 ) === $game->getMainDiagonal(0)->getSpace( 2 ) &&
-            $game->getMainDiagonal(0)->getSpace( 0 ) !== GameMark::None
-        ) return true;
-
-        if (    // Check the anti-diagonal
-            $game->getAntiDiagonal(0)->getSpace( 0 ) === $game->getAntiDiagonal(0)->getSpace( 1 ) &&
-            $game->getAntiDiagonal(0)->getSpace( 0 ) === $game->getAntiDiagonal(0)->getSpace( 2 ) &&
-            $game->getAntiDiagonal(0)->getSpace( 0 ) !== GameMark::None
-        ) return true;
-
+        //i ist für die Reihe
+        for($i = 0; $i < 3; $i++){   
+            if (
+                $game->getRow($i)->getSpace( 0 ) === $game->getRow($i)->getSpace( 1 ) &&
+                $game->getRow($i)->getSpace( 0 ) === $game->getRow($i)->getSpace( 2 ) &&
+                $game->getRow($i)->getSpace( 0 ) !== GameMark::None){
+                    return true;
+                }
+            if(
+                $game->getColumn($i)->getSpace( 0 ) === $game->getColumn($i)->getSpace( 1 ) &&
+                $game->getColumn($i)->getSpace( 0 ) === $game->getColumn($i)->getSpace( 2 ) &&
+                $game->getColumn($i)->getSpace( 0 ) !== GameMark::None){
+                    return true;
+                }
+            if(
+                ($game->getMainDiagonal(0)->getSpace(0) === $game->getMainDiagonal(0)->getSpace(1) &&
+                 $game->getMainDiagonal(0)->getSpace(0) === $game->getMainDiagonal(0)->getSpace(2) &&
+                 $game->getMainDiagonal(0)->getSpace(0) !== GameMark::None)
+               ||
+               ($game->getAntiDiagonal(0)->getSpace(0) === $game->getAntiDiagonal(0)->getSpace(1) &&
+                $game->getAntiDiagonal(0)->getSpace(0) === $game->getAntiDiagonal(0)->getSpace(2) &&
+                $game->getAntiDiagonal(0)->getSpace(0) !== GameMark::None)){
+                    return true;
+                }
+            }
         return false;
     }
 
     protected function whoHasWon( GameBoard $game ): ?GamePlayer {
+
         // ##### TASK 8 - Check who has won ############################################################################
         // =============================================================================================================
         // Here, you need to code a way to find out who has won the game.
         // This function needs to return null if nobody has won yet - you can use someoneHasWon( $game ) for this.
         // If someone has won, it needs to return either GamePlayer::Human or GamePlayer::Robot.
         // =============================================================================================================
-
+        // neue variable erstellen
+        $gewinner = $this->someoneHasWon($game);
+        
+        if($gewinner === GamePlayer::Human){
+            return response("Human has won");
+        }
+        elseif($gewinner === GamePlayer::Robot){
+            return response("Bot has won");
+        }
+        // no need for else statement 
         return null;
     }
 
@@ -131,8 +118,17 @@ class GameController extends Controller
         // GamePlayer::Human (the last move was made by the player) or GamePlayer::None (this is the first move).
         // Inside of $player you have the player which wants to play now.
         // If he is allowed to play, you have to return true, otherwise you have to return false.
-
-        return true;
+        $current = $player;
+        $last = $game->getLastPlayer($game);
+        // 
+        if ($last === GamePlayer::Human && $current !== $player){
+            return true;
+        }
+        elseif ($last === GamePlayer::Robot && $current !== $player){
+            return true;
+        }
+        //no need for else statement / keine notwendigkeit für else
+        return false;
     }
 
     /**
@@ -180,7 +176,13 @@ class GameController extends Controller
         //return response("This space has already been claimed!")->setStatusCode(403)->header('Content-Type', 'text/plain');
 
         // [ The code to update the game board goes here ]
-
+        if($game->setSpace($x, $y,) ===  GameMark::None)
+        {
+            $game->setSpace($x, $y, GameMark::Circle);
+        }
+        // no need for else statement / keine notwendigkeit für else
+        return response("This space has already been claimed!")->setStatusCode(403)->header('Content-Type', 'text/plain');
+        
         // Saving the game board and output it to the player
         $game->save();
         return $this->status_output( $game );
