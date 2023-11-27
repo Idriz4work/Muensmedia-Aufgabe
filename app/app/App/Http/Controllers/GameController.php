@@ -89,13 +89,13 @@ class GameController extends Controller
         // neue variable erstellen
         $gewinner = $this->someoneHasWon($game);
         
-        if($gewinner === GamePlayer::Human){
-            return response("Human has won");
+        if($gewinner === true){
+            return GamePlayer::Human;
         }
-        elseif($gewinner === GamePlayer::Robot){
-            return response("Bot has won");
+        elseif($gewinner === false){
+            return GamePlayer::Robot;
         }
-        // no need for else statement 
+        //no need for else statement / keine notwendigkeit für else
         return null;
     }
 
@@ -118,17 +118,13 @@ class GameController extends Controller
         // GamePlayer::Human (the last move was made by the player) or GamePlayer::None (this is the first move).
         // Inside of $player you have the player which wants to play now.
         // If he is allowed to play, you have to return true, otherwise you have to return false.
-        $current = $player;
-        $last = $game->getLastPlayer($game);
         // 
-        if ($last === GamePlayer::Human && $current !== $player){
-            return true;
-        }
-        elseif ($last === GamePlayer::Robot && $current !== $player){
+        if ($game->getLastPlayer() !== $player){
             return true;
         }
         //no need for else statement / keine notwendigkeit für else
         return false;
+    
     }
 
     /**
@@ -144,7 +140,7 @@ class GameController extends Controller
 
         // Check if the given position is actually valid; can't have the player draw a cross on the table next to the
         // game board ;)
-        if ($x < 0 || $x > 2 || $y < 0 || $y > 2)
+        if ($x < 0 || $x > 3 || $y < 0 || $y > 3)
             return response("Position outside of the game board")->setStatusCode(422)->header('Content-Type', 'text/plain');
 
         // Prevent the player from playing if the game has already ended
@@ -176,13 +172,12 @@ class GameController extends Controller
         //return response("This space has already been claimed!")->setStatusCode(403)->header('Content-Type', 'text/plain');
 
         // [ The code to update the game board goes here ]
-        if($game->setSpace($x, $y,) ===  GameMark::None)
-        {
-            $game->setSpace($x, $y, GameMark::Circle);
+        if( $game->getSpace( $x, $y ) === GameMark::None){
+            $game->setSpace( $x, $y, GameMark::Circle) === GameMark::Circle;
         }
-        // no need for else statement / keine notwendigkeit für else
-        return response("This space has already been claimed!")->setStatusCode(403)->header('Content-Type', 'text/plain');
-        
+        else{
+            return response("This space has already been claimed!")->setStatusCode(403)->header('Content-Type', 'text/plain');
+        }
         // Saving the game board and output it to the player
         $game->save();
         return $this->status_output( $game );
