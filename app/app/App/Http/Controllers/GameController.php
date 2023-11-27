@@ -50,15 +50,16 @@ class GameController extends Controller
         // shorten this function without compromising its functionality. Note that by "shorten", we don't mean to just
         // remove spaces and line breaks ;)
         // =============================================================================================================
-        //i ist für die Reihe
         for($i = 0; $i < 3; $i++){   
             if (
+                // für die reihe i eingesetzt
                 $game->getRow($i)->getSpace( 0 ) === $game->getRow($i)->getSpace( 1 ) &&
                 $game->getRow($i)->getSpace( 0 ) === $game->getRow($i)->getSpace( 2 ) &&
                 $game->getRow($i)->getSpace( 0 ) !== GameMark::None){
                     return true;
                 }
             if(
+                // für die spalte i eingesetzt
                 $game->getColumn($i)->getSpace( 0 ) === $game->getColumn($i)->getSpace( 1 ) &&
                 $game->getColumn($i)->getSpace( 0 ) === $game->getColumn($i)->getSpace( 2 ) &&
                 $game->getColumn($i)->getSpace( 0 ) !== GameMark::None){
@@ -174,7 +175,8 @@ class GameController extends Controller
         // [ The code to update the game board goes here ]
         if( $game->getSpace( $x, $y ) === GameMark::None){
             $game->setSpace( $x, $y, GameMark::Circle) === GameMark::Circle;
-        }
+        } 
+        // without the else statement the function is false 
         else{
             return response("This space has already been claimed!")->setStatusCode(403)->header('Content-Type', 'text/plain');
         }
