@@ -56,24 +56,24 @@ class GameController extends Controller
                 $game->getRow($i)->getSpace( 0 ) === $game->getRow($i)->getSpace( 1 ) &&
                 $game->getRow($i)->getSpace( 0 ) === $game->getRow($i)->getSpace( 2 ) &&
                 $game->getRow($i)->getSpace( 0 ) !== GameMark::None){
-                    return true;
+                return true;
                 }
             if(
                 // für die spalte i eingesetzt
                 $game->getColumn($i)->getSpace( 0 ) === $game->getColumn($i)->getSpace( 1 ) &&
                 $game->getColumn($i)->getSpace( 0 ) === $game->getColumn($i)->getSpace( 2 ) &&
                 $game->getColumn($i)->getSpace( 0 ) !== GameMark::None){
-                    return true;
+                return true;
                 }
             if(
-                ($game->getMainDiagonal(0)->getSpace(0) === $game->getMainDiagonal(0)->getSpace(1) &&
-                 $game->getMainDiagonal(0)->getSpace(0) === $game->getMainDiagonal(0)->getSpace(2) &&
-                 $game->getMainDiagonal(0)->getSpace(0) !== GameMark::None)
+                ($game->getMainDiagonal($i)->getSpace(0) === $game->getMainDiagonal(0)->getSpace(1) &&
+                 $game->getMainDiagonal($i)->getSpace(0) === $game->getMainDiagonal(0)->getSpace(2) &&
+                 $game->getMainDiagonal($i)->getSpace(0) !== GameMark::None)
                ||
-               ($game->getAntiDiagonal(0)->getSpace(0) === $game->getAntiDiagonal(0)->getSpace(1) &&
-                $game->getAntiDiagonal(0)->getSpace(0) === $game->getAntiDiagonal(0)->getSpace(2) &&
-                $game->getAntiDiagonal(0)->getSpace(0) !== GameMark::None)){
-                    return true;
+               ($game->getAntiDiagonal($i)->getSpace(0) === $game->getAntiDiagonal(0)->getSpace(1) &&
+                $game->getAntiDiagonal($i)->getSpace(0) === $game->getAntiDiagonal(0)->getSpace(2) &&
+                $game->getAntiDiagonal($i)->getSpace(0) !== GameMark::None)){
+                return true;
                 }
             }
         return false;
@@ -125,7 +125,6 @@ class GameController extends Controller
         }
         //no need for else statement / keine notwendigkeit für else
         return false;
-    
     }
 
     /**
@@ -180,6 +179,7 @@ class GameController extends Controller
         else{
             return response("This space has already been claimed!")->setStatusCode(403)->header('Content-Type', 'text/plain');
         }
+        
         // Saving the game board and output it to the player
         $game->save();
         return $this->status_output( $game );
